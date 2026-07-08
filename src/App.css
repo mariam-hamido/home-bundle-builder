@@ -384,6 +384,60 @@
   align-self: flex-start;
 }
 
+.review-panel__summary {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #ececf1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-panel__summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-panel__label {
+  color: #6c7280;
+  font-size: 0.92rem;
+}
+
+.review-panel__value {
+  font-weight: 600;
+  color: #111827;
+}
+
+.review-panel__pricing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-panel__value--original {
+  color: #9aa0ac;
+  text-decoration: line-through;
+  font-weight: 400;
+  font-size: 0.92rem;
+}
+
+.review-panel__summary-row--savings .review-panel__label,
+.review-panel__summary-row--savings .review-panel__value {
+  color: #16a34a;
+}
+
+.review-panel__summary-row--total {
+  padding-top: 12px;
+  border-top: 1px solid #ececf1;
+}
+
+.review-panel__summary-row--total .review-panel__label,
+.review-panel__summary-row--total .review-panel__value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
 @media (max-width: 1024px) {
   .app-shell {
     padding: 20px;
