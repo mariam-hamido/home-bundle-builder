@@ -1,11 +1,14 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useBundleBuilder } from '../../bundle-builder/context/BundleBuilderContext'
 import { CHECKOUT, DECREMENT_QUANTITY, INCREMENT_QUANTITY, RESET_CHECKOUT, SAVE_BUNDLE } from '../../bundle-builder/context/actions'
-import { calculateSubtotal, calculateDiscount, calculateSavings, calculateTotal } from '../../../utils/price'
+import { calculateSubtotal, calculateDiscount, calculateTotal } from '../../../utils/price'
+import { formatPrice } from '../../../utils/price'
+import { buildReviewGroups } from '../../../utils/selections'
+import QuantityControl from '../../../components/QuantityControl'
 
 const SHIPPING = 5.99
 
-const categoryGroups = [
+const CATEGORY_GROUPS = [
   { key: 'cameras', title: 'Cameras' },
   { key: 'plans', title: 'Plan' },
   { key: 'sensors', title: 'Sensors' },
@@ -17,27 +20,39 @@ function ReviewPanel() {
 
   const hasItems = Object.keys(state.selectedItems ?? {}).length > 0
 
-  const formatPrice = (value) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-
   const modalCloseRef = useRef(null)
 
-  const handleCheckout = () => {
+  const handleCheckout = useCallback(() => {
     dispatch({ type: CHECKOUT })
-  }
+  }, [dispatch])
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     dispatch({ type: RESET_CHECKOUT })
-  }
+  }, [dispatch])
 
-  const handleBackdropClick = (e) => {
+  const handleBackdropClick = useCallback((e) => {
     if (e.target === e.currentTarget) {
       handleCloseModal()
     }
-  }
+  }, [handleCloseModal])
+
+  const handleSaveBundle = useCallback(() => {
+    dispatch({ type: SAVE_BUNDLE })
+  }, [dispatch])
+
+  const handleIncrementQuantity = useCallback((productId, variantId, variantIds) => {
+    dispatch({
+      type: INCREMENT_QUANTITY,
+      payload: { productId, variantId, variantIds },
+    })
+  }, [dispatch])
+
+  const handleDecrementQuantity = useCallback((productId, variantId, variantIds) => {
+    dispatch({
+      type: DECREMENT_QUANTITY,
+      payload: { productId, variantId, variantIds },
+    })
+  }, [dispatch])
 
   useEffect(() => {
     if (state.checkoutStatus === 'confirmed' && modalCloseRef.current) {
@@ -56,82 +71,26 @@ function ReviewPanel() {
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [state.checkoutStatus])
+  }, [state.checkoutStatus, handleCloseModal])
 
-  const handleIncrementQuantity = (productId, variantId, variantIds) => {
-    dispatch({
-      type: INCREMENT_QUANTITY,
-      payload: { productId, variantId, variantIds },
-    })
-  }
+  const reviewGroups = useMemo(
+    () => buildReviewGroups(state.selectedItems, state.bundleData, CATEGORY_GROUPS),
+    [state.selectedItems, state.bundleData],
+  )
 
-  const handleDecrementQuantity = (productId, variantId, variantIds) => {
-    dispatch({
-      type: DECREMENT_QUANTITY,
-      payload: { productId, variantId, variantIds },
-    })
-  }
-
-  const subtotal = calculateSubtotal(state.selectedItems, state.bundleData)
-  const discount = calculateDiscount(state.selectedItems, state.bundleData)
-  const savings = calculateSavings(state.selectedItems, state.bundleData)
-  const total = calculateTotal(state.selectedItems, state.bundleData, SHIPPING)
-  const hasDiscount = discount > 0
-  const originalTotal = subtotal + discount
-
-  const reviewGroups = categoryGroups.reduce((groups, category) => {
-    const products = Array.isArray(state.bundleData?.[category.key]) ? state.bundleData[category.key] : []
-    const items = products.flatMap((product) => {
-      const selectionEntry = state.selectedItems?.[product.id]
-      const variantIds = Array.isArray(product?.variants) ? product.variants.map((variant) => variant.id) : []
-
-      if (variantIds.length > 0) {
-        return product.variants.flatMap((variant) => {
-          const quantity = selectionEntry?.quantities?.[variant.id] ?? 0
-
-          if (quantity <= 0) {
-            return []
-          }
-
-          return [{
-            id: `${product.id}-${variant.id}`,
-            productId: product.id,
-            product,
-            variantId: variant.id,
-            variantName: variant.name,
-            quantity,
-            image: variant.image || product.image,
-            price: product.price,
-            variantIds,
-          }]
-        })
-      }
-
-      const quantity = selectionEntry?.quantity ?? 0
-
-      if (quantity <= 0) {
-        return []
-      }
-
-      return [{
-        id: product.id,
-        productId: product.id,
-        product,
-        variantId: null,
-        variantName: null,
-        quantity,
-        image: product.image,
-        price: product.price,
-        variantIds: [],
-      }]
-    })
-
-    if (items.length === 0) {
-      return groups
+  const orderSummary = useMemo(() => {
+    const subtotal = calculateSubtotal(state.selectedItems, state.bundleData)
+    const discount = calculateDiscount(state.selectedItems, state.bundleData)
+    const total = calculateTotal(state.selectedItems, state.bundleData, SHIPPING)
+    const hasDiscount = discount > 0
+    return {
+      subtotal,
+      discount,
+      total,
+      originalTotal: subtotal + discount,
+      hasDiscount,
     }
-
-    return [...groups, { ...category, items }]
-  }, [])
+  }, [state.selectedItems, state.bundleData])
 
   return (
     <aside className="review-panel" aria-label="Review panel">
@@ -166,26 +125,11 @@ function ReviewPanel() {
 
                         {item.variantName ? <p className="review-panel__variant">{item.variantName}</p> : null}
 
-                        <div className="review-panel__quantity" aria-label="Quantity selector">
-                          <button
-                            type="button"
-                            className="product-card__quantity-button"
-                            onClick={() => handleDecrementQuantity(item.productId, item.variantId, item.variantIds)}
-                            disabled={item.quantity <= 0}
-                            aria-label="Decrease quantity"
-                          >
-                            −
-                          </button>
-                          <span className="product-card__quantity-value">{item.quantity}</span>
-                          <button
-                            type="button"
-                            className="product-card__quantity-button"
-                            onClick={() => handleIncrementQuantity(item.productId, item.variantId, item.variantIds)}
-                            aria-label="Increase quantity"
-                          >
-                            +
-                          </button>
-                        </div>
+                        <QuantityControl
+                          quantity={item.quantity}
+                          onDecrement={() => handleDecrementQuantity(item.productId, item.variantId, item.variantIds)}
+                          onIncrement={() => handleIncrementQuantity(item.productId, item.variantId, item.variantIds)}
+                        />
                       </div>
                     </article>
                   ))}
@@ -198,25 +142,25 @@ function ReviewPanel() {
             <div className="review-panel__summary-row">
               <span className="review-panel__label">Subtotal</span>
               <span className="review-panel__pricing">
-                {hasDiscount && (
-                  <span className="review-panel__value--original">{formatPrice(originalTotal)}</span>
+                {orderSummary.hasDiscount && (
+                  <span className="review-panel__value--original">{formatPrice(orderSummary.originalTotal)}</span>
                 )}
-                <span className="review-panel__value">{formatPrice(subtotal)}</span>
+                <span className="review-panel__value">{formatPrice(orderSummary.subtotal)}</span>
               </span>
             </div>
             <div className="review-panel__summary-row">
               <span className="review-panel__label">Shipping</span>
               <span className="review-panel__value">{formatPrice(SHIPPING)}</span>
             </div>
-            {hasDiscount && (
+            {orderSummary.hasDiscount && (
               <div className="review-panel__summary-row review-panel__summary-row--savings">
                 <span className="review-panel__label">You save</span>
-                <span className="review-panel__value">-{formatPrice(savings)}</span>
+                <span className="review-panel__value">-{formatPrice(orderSummary.discount)}</span>
               </div>
             )}
             <div className="review-panel__summary-row review-panel__summary-row--total">
               <span className="review-panel__label">Total</span>
-              <span className="review-panel__value">{formatPrice(total)}</span>
+              <span className="review-panel__value">{formatPrice(orderSummary.total)}</span>
             </div>
           </div>
 
@@ -235,7 +179,7 @@ function ReviewPanel() {
               className="review-panel__save-button"
               disabled={!canSave}
               aria-disabled={!canSave}
-              onClick={() => dispatch({ type: SAVE_BUNDLE })}
+              onClick={handleSaveBundle}
             >
               Save my system for later
             </button>

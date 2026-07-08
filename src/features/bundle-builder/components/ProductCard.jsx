@@ -1,10 +1,12 @@
+import { useCallback } from 'react'
 import { useBundleBuilder } from '../context/BundleBuilderContext'
 import { DECREMENT_QUANTITY, INCREMENT_QUANTITY, SELECT_VARIANT } from '../context/actions'
+import { formatPrice } from '../../../utils/price'
+import QuantityControl from '../../../components/QuantityControl'
 
 function ProductCard({ product }) {
   const { state, dispatch } = useBundleBuilder()
   const hasOriginalPrice = typeof product?.originalPrice === 'number'
-  const hasDescription = Boolean(product?.description?.trim())
   const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0
   const selectionEntry = state.selectedItems?.[product?.id]
   const selectedVariantId = hasVariants
@@ -19,23 +21,17 @@ function ProductCard({ product }) {
     : selectionEntry?.quantity ?? 0
   const variantIds = hasVariants ? product.variants.map((variant) => variant.id) : []
 
-  const formatPrice = (value) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-
-  const handleVariantSelect = (variantId) => {
+  const handleVariantSelect = useCallback((variantId) => {
     dispatch({ type: SELECT_VARIANT, payload: { productId: product.id, variantId, variantIds } })
-  }
+  }, [dispatch, product.id, variantIds])
 
-  const handleIncrementQuantity = () => {
+  const handleIncrement = useCallback(() => {
     dispatch({ type: INCREMENT_QUANTITY, payload: { productId: product.id, variantId: selectedVariantId, variantIds } })
-  }
+  }, [dispatch, product.id, selectedVariantId, variantIds])
 
-  const handleDecrementQuantity = () => {
+  const handleDecrement = useCallback(() => {
     dispatch({ type: DECREMENT_QUANTITY, payload: { productId: product.id, variantId: selectedVariantId, variantIds } })
-  }
+  }, [dispatch, product.id, selectedVariantId, variantIds])
 
   return (
     <article className="product-card">
@@ -47,7 +43,7 @@ function ProductCard({ product }) {
       <div className="product-card__content">
         <div className="product-card__header">
           <h3 className="product-card__title">{product?.title}</h3>
-          {hasDescription ? <p className="product-card__description">{product.description}</p> : null}
+          {product?.description?.trim() ? <p className="product-card__description">{product.description}</p> : null}
         </div>
 
         <div className="product-card__pricing">
@@ -89,26 +85,11 @@ function ProductCard({ product }) {
             Learn More
           </a>
 
-          <div className="product-card__quantity" aria-label="Quantity selector">
-            <button
-              type="button"
-              className="product-card__quantity-button"
-              onClick={handleDecrementQuantity}
-              disabled={activeQuantity <= 0}
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span className="product-card__quantity-value">{activeQuantity}</span>
-            <button
-              type="button"
-              className="product-card__quantity-button"
-              onClick={handleIncrementQuantity}
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
+          <QuantityControl
+            quantity={activeQuantity}
+            onDecrement={handleDecrement}
+            onIncrement={handleIncrement}
+          />
         </div>
       </div>
     </article>

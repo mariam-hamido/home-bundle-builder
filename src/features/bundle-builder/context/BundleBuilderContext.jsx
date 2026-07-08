@@ -52,8 +52,13 @@ export function BundleBuilderProvider({ children }) {
     }
   }, [])
 
+  const contextValue = useMemo(
+    () => ({ state, dispatch, saved, canSave }),
+    [state, dispatch, saved, canSave],
+  )
+
   return (
-    <BundleBuilderContext.Provider value={{ state, dispatch, saved, canSave }}>
+    <BundleBuilderContext.Provider value={contextValue}>
       {children}
     </BundleBuilderContext.Provider>
   )

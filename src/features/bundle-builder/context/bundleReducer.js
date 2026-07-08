@@ -11,7 +11,6 @@ import {
   SAVE_BUNDLE,
   SELECT_VARIANT,
   SET_ACTIVE_STEP,
-  UPDATE_QUANTITY,
 } from './actions'
 import initialState from './initialState'
 
@@ -173,9 +172,6 @@ function bundleReducer(state = initialState, action) {
         } : null),
       }
     }
-
-    case UPDATE_QUANTITY:
-      return state
 
     case SAVE_BUNDLE:
       return state

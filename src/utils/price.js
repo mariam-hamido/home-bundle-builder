@@ -1,3 +1,10 @@
+export function formatPrice(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value)
+}
+
 function flattenSelectedItems(selectedItems, bundleData) {
   const lines = []
   if (!selectedItems || !bundleData) return lines
