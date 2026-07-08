@@ -1,5 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { useBundleBuilder } from '../../bundle-builder/context/BundleBuilderContext'
-import { DECREMENT_QUANTITY, INCREMENT_QUANTITY, SAVE_BUNDLE } from '../../bundle-builder/context/actions'
+import { CHECKOUT, DECREMENT_QUANTITY, INCREMENT_QUANTITY, RESET_CHECKOUT, SAVE_BUNDLE } from '../../bundle-builder/context/actions'
 import { calculateSubtotal, calculateDiscount, calculateSavings, calculateTotal } from '../../../utils/price'
 
 const SHIPPING = 5.99
@@ -12,13 +13,50 @@ const categoryGroups = [
 ]
 
 function ReviewPanel() {
-  const { state, dispatch, saved } = useBundleBuilder()
+  const { state, dispatch, saved, canSave } = useBundleBuilder()
+
+  const hasItems = Object.keys(state.selectedItems ?? {}).length > 0
 
   const formatPrice = (value) =>
     new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(value)
+
+  const modalCloseRef = useRef(null)
+
+  const handleCheckout = () => {
+    dispatch({ type: CHECKOUT })
+  }
+
+  const handleCloseModal = () => {
+    dispatch({ type: RESET_CHECKOUT })
+  }
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleCloseModal()
+    }
+  }
+
+  useEffect(() => {
+    if (state.checkoutStatus === 'confirmed' && modalCloseRef.current) {
+      modalCloseRef.current.focus()
+    }
+  }, [state.checkoutStatus])
+
+  useEffect(() => {
+    if (state.checkoutStatus !== 'confirmed') return
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleCloseModal()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [state.checkoutStatus])
 
   const handleIncrementQuantity = (productId, variantId, variantIds) => {
     dispatch({
@@ -185,7 +223,18 @@ function ReviewPanel() {
           <div className="review-panel__actions">
             <button
               type="button"
+              className="review-panel__checkout-button"
+              disabled={!hasItems}
+              aria-disabled={!hasItems}
+              onClick={handleCheckout}
+            >
+              Checkout
+            </button>
+            <button
+              type="button"
               className="review-panel__save-button"
+              disabled={!canSave}
+              aria-disabled={!canSave}
               onClick={() => dispatch({ type: SAVE_BUNDLE })}
             >
               Save my system for later
@@ -193,6 +242,39 @@ function ReviewPanel() {
             {saved && <p className="review-panel__toast">Bundle saved!</p>}
           </div>
         </>
+      )}
+
+      {state.checkoutStatus === 'confirmed' && (
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="checkout-modal-title"
+          onClick={handleBackdropClick}
+        >
+          <div className="modal">
+            <div className="modal__header">
+              <h2 id="checkout-modal-title">Bundle Complete!</h2>
+              <button
+                type="button"
+                className="modal__close"
+                ref={modalCloseRef}
+                onClick={handleCloseModal}
+                aria-label="Close confirmation"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal__body">
+              <p>Your bundle has been successfully configured.</p>
+            </div>
+            <div className="modal__footer">
+              <button type="button" className="modal__button" onClick={handleCloseModal}>
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </aside>
   )

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import bundleData from '../../../data/bundle.json'
 import { loadBundle, saveBundle as persistBundle } from '../../../utils/storage'
 import bundleReducer from './bundleReducer'
@@ -12,7 +12,16 @@ export function BundleBuilderProvider({ children }) {
   const stateRef = useRef(state)
   stateRef.current = state
 
+  const lastSavedHashRef = useRef('')
+
   const [saved, setSaved] = useState(false)
+  const [lastSavedHash, setLastSavedHash] = useState('')
+
+  const currentHash = useMemo(
+    () => JSON.stringify({ selectedItems: state.selectedItems, currentStep: state.currentStep }),
+    [state.selectedItems, state.currentStep],
+  )
+  const canSave = currentHash !== lastSavedHash
 
   const dispatch = useCallback((action) => {
     if (action.type === SAVE_BUNDLE) {
@@ -20,9 +29,16 @@ export function BundleBuilderProvider({ children }) {
         selectedItems: stateRef.current.selectedItems,
         currentStep: stateRef.current.currentStep,
       }
-      persistBundle(config)
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2500)
+      const hash = JSON.stringify(config)
+      if (hash !== lastSavedHashRef.current) {
+        persistBundle(config)
+        lastSavedHashRef.current = hash
+        setLastSavedHash(hash)
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2500)
+      }
+      rawDispatch(action)
+      return
     }
     rawDispatch(action)
   }, [rawDispatch])
@@ -37,7 +53,7 @@ export function BundleBuilderProvider({ children }) {
   }, [])
 
   return (
-    <BundleBuilderContext.Provider value={{ state, dispatch, saved }}>
+    <BundleBuilderContext.Provider value={{ state, dispatch, saved, canSave }}>
       {children}
     </BundleBuilderContext.Provider>
   )

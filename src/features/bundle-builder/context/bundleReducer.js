@@ -1,10 +1,12 @@
 import {
+  CHECKOUT,
   DECREMENT_QUANTITY,
   INCREMENT_QUANTITY,
   LOAD_BUNDLE,
   NEXT_STEP,
   PREVIOUS_STEP,
   RESET_BUNDLE,
+  RESET_CHECKOUT,
   RESTORE_BUNDLE,
   SAVE_BUNDLE,
   SELECT_VARIANT,
@@ -188,6 +190,18 @@ function bundleReducer(state = initialState, action) {
         currentStep: saved.currentStep ?? 0,
       }
     }
+
+    case CHECKOUT:
+      return {
+        ...state,
+        checkoutStatus: 'confirmed',
+      }
+
+    case RESET_CHECKOUT:
+      return {
+        ...state,
+        checkoutStatus: null,
+      }
 
     case RESET_BUNDLE:
       return {
