@@ -1,0 +1,7 @@
+export const LOAD_BUNDLE = 'LOAD_BUNDLE'
+export const NEXT_STEP = 'NEXT_STEP'
+export const PREVIOUS_STEP = 'PREVIOUS_STEP'
+export const SELECT_VARIANT = 'SELECT_VARIANT'
+export const UPDATE_QUANTITY = 'UPDATE_QUANTITY'
+export const RESTORE_BUNDLE = 'RESTORE_BUNDLE'
+export const RESET_BUNDLE = 'RESET_BUNDLE'
