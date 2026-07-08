@@ -1,5 +1,5 @@
 import { useBundleBuilder } from '../../bundle-builder/context/BundleBuilderContext'
-import { DECREMENT_QUANTITY, INCREMENT_QUANTITY } from '../../bundle-builder/context/actions'
+import { DECREMENT_QUANTITY, INCREMENT_QUANTITY, SAVE_BUNDLE } from '../../bundle-builder/context/actions'
 import { calculateSubtotal, calculateDiscount, calculateSavings, calculateTotal } from '../../../utils/price'
 
 const SHIPPING = 5.99
@@ -12,7 +12,7 @@ const categoryGroups = [
 ]
 
 function ReviewPanel() {
-  const { state, dispatch } = useBundleBuilder()
+  const { state, dispatch, saved } = useBundleBuilder()
 
   const formatPrice = (value) =>
     new Intl.NumberFormat('en-US', {
@@ -180,6 +180,17 @@ function ReviewPanel() {
               <span className="review-panel__label">Total</span>
               <span className="review-panel__value">{formatPrice(total)}</span>
             </div>
+          </div>
+
+          <div className="review-panel__actions">
+            <button
+              type="button"
+              className="review-panel__save-button"
+              onClick={() => dispatch({ type: SAVE_BUNDLE })}
+            >
+              Save my system for later
+            </button>
+            {saved && <p className="review-panel__toast">Bundle saved!</p>}
           </div>
         </>
       )}

@@ -6,6 +6,7 @@ import {
   PREVIOUS_STEP,
   RESET_BUNDLE,
   RESTORE_BUNDLE,
+  SAVE_BUNDLE,
   SELECT_VARIANT,
   SET_ACTIVE_STEP,
   UPDATE_QUANTITY,
@@ -174,8 +175,19 @@ function bundleReducer(state = initialState, action) {
     case UPDATE_QUANTITY:
       return state
 
-    case RESTORE_BUNDLE:
+    case SAVE_BUNDLE:
       return state
+
+    case RESTORE_BUNDLE: {
+      const saved = action.payload
+      if (!saved) return state
+
+      return {
+        ...state,
+        selectedItems: saved.selectedItems ?? {},
+        currentStep: saved.currentStep ?? 0,
+      }
+    }
 
     case RESET_BUNDLE:
       return {

@@ -438,6 +438,32 @@
   font-weight: 700;
 }
 
+.review-panel__actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-panel__save-button {
+  width: 100%;
+  border: 2px solid #111827;
+  border-radius: 999px;
+  background: #fff;
+  color: #111827;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.review-panel__toast {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #16a34a;
+  font-weight: 600;
+}
+
 @media (max-width: 1024px) {
   .app-shell {
     padding: 20px;
