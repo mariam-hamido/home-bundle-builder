@@ -27,32 +27,148 @@
           "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-v4-wyze-labs-inc-7932440.png?v=1770161074"
         }
       ]
-    }
-  ],
-
-  "plans": [
+    },
     {
-      "id": "cam-plus-monthly",
-      "title": "Cam Plus Monthly Plan",
-      "category": "plan",
-      "price": 2.99,
-      "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-plus-wyze-labs-inc-727948.png?v=1762447323",
+      "id": "wyze-cam-pan-v3",
+      "title": "Wyze Cam Pan v3",
+      "category": "camera",
+      "price": 49,
+      "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-pan-v3-wyze-labs-inc-4415418.webp?v=1773434969",
       "variants": [
         {
-          "id": "monthly",
-          "name": "Monthly",
-          "swatch": "#5B3DF5"
+          "id": "white",
+          "name": "White",
+          "swatch": "#F8F9FA",
+          "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-pan-v3-wyze-labs-inc-4415418.webp?v=1773434969"
         },
         {
-          "id": "annual",
-          "name": "Annual",
-          "swatch": "#20B26B"
+          "id": "black",
+          "name": "Black",
+          "swatch": "#343A40",
+          "image": "https://www.wyze.com/cdn/shop/files/refurbished-wyze-cam-pan-v3-wyze-labs-inc-689365.png?v=1773434969"
+        }
+      ]
+    },
+    {
+      "id": "wyze-cam-floodlight-v2",
+      "title": "Wyze Cam Floodlight Pro",
+      "category": "camera",
+      "price": 89,
+      "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-floodlight-pro-wyze-labs-inc-565701.png?v=1762440313&width=990",
+      "variants": [
+        {
+          "id": "white",
+          "name": "White",
+          "swatch": "#F8F9FA",
+          "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-floodlight-pro-wyze-labs-inc-565701.png?v=1762440313&width=990"
+        }
+      ]
+    },
+    {
+      "id": "wyze-duo-cam-doorbell",
+      "title": "Wyze Duo Cam Battery Doorbell",
+      "category": "camera",
+      "price": 99,
+      "originalPrice": 129,
+      "image": "https://www.wyze.com/cdn/shop/files/wyze-duo-cam-battery-doorbell-wyze-labs-inc-148701.png?v=1770920552&width=990",
+      "variants": [
+        {
+          "id": "black",
+          "name": "Black",
+          "swatch": "#343A40",
+          "image": "https://www.wyze.com/cdn/shop/files/wyze-duo-cam-battery-doorbell-wyze-labs-inc-148701.png?v=1770920552&width=990"
+        },
+        {
+          "id": "silver",
+          "name": "Silver",
+          "swatch": "#CED4DA",
+          "image": "https://www.wyze.com/cdn/shop/files/wyze-duo-cam-battery-doorbell-wyze-labs-inc-250890.png?v=1762447336&width=990"
+        }
+      ]
+    },
+    {
+      "id": "wyze-battery-cam-pro",
+      "title": "Wyze Battery Cam Pro",
+      "category": "camera",
+      "price": 69,
+      "image": "https://www.wyze.com/cdn/shop/files/wyze-battery-cam-pro-wyze-labs-inc-1939761.png?v=1762439887",
+      "variants": [
+        {
+          "id": "white",
+          "name": "White",
+          "swatch": "#F8F9FA",
+          "image": "https://www.wyze.com/cdn/shop/files/wyze-battery-cam-pro-wyze-labs-inc-1939761.png?v=1762439887"
+        },
+        {
+          "id": "black",
+          "name": "Black",
+          "swatch": "#343A40",
+          "image": "https://www.wyze.com/cdn/shop/files/wyze-battery-cam-pro-wyze-labs-inc-5922471.png?v=1751461686"
         }
       ]
     }
   ],
-
-  "sensors": [],
-
-  "accessories": []
+  "plans": [
+    {
+      "id": "cam-plus-monthly",
+      "title": "Cam Plus Monthly Plan",
+      "category": "plans",
+      "price": 2.99,
+      "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-plus-wyze-labs-inc-727948.png?v=1762447323",
+      "variants": [
+        { "id": "monthly", "name": "Monthly", "swatch": "#5B3DF5" },
+        { "id": "annual", "name": "Annual", "swatch": "#20B26B" }
+      ]
+    },
+    {
+      "id": "cam-unlimited-plan",
+      "title": "Cam Unlimited Plan",
+      "category": "plans",
+      "price": 9.99,
+      "originalPrice": 12.99,
+      "image": "https://www.wyze.com/cdn/shop/files/wyze-cam-unlimited-wyze-labs-inc-324070.png?v=1762447323",
+      "variants": [
+        { "id": "monthly", "name": "Monthly", "swatch": "#5B3DF5" },
+        { "id": "annual", "name": "Annual", "swatch": "#20B26B" }
+      ]
+    }
+  ],
+  "sensors": [
+    {
+      "id": "wyze-sense-motion-sensor",
+      "title": "Wyze Sense Motion Sensor",
+      "category": "sensors",
+      "price": 24,
+      "originalPrice": 29.99,
+      "image": "https://www.wyze.com/cdn/shop/products/wyze-sense-motion-sensor-wyze-labs-inc-814192.png?v=1762439811&width=990",
+      "variants": []
+    },
+    {
+      "id": "wyze-sense-hub",
+      "title": "Wyze Sense Hub",
+      "category": "sensors",
+      "price": 55.98,
+      "image": "https://www.wyze.com/cdn/shop/products/wyze-sense-hub-wyze-labs-inc-960449.png?v=1762439812",
+      "variants": []
+    }
+  ],
+  "protections": [
+    {
+      "id": "wyze-microsd-card",
+      "title": "Wyze MicroSD Card",
+      "category": "accessories",
+      "price": 18.98,
+      "originalPrice": 24.99,
+      "image": "https://www.wyze.com/cdn/shop/products/wyze-microsd-card-wyze-labs-inc-153807.jpg?v=1762448194&width=990",
+      "variants": []
+    },
+    {
+      "id": "wyze-outdoor-power-adapter",
+      "title": "Wyze Outdoor Power Adapter",
+      "category": "accessories",
+      "price": 13.99,
+      "image": "https://www.wyze.com/cdn/shop/products/wyze-outdoor-power-adapter-wyze-labs-inc-797412.png?v=1762439824&width=990",
+      "variants": []
+    }
+  ]
 }
