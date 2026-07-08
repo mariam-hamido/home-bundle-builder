@@ -34,24 +34,19 @@ function ProductCard({ product }) {
   }, [dispatch, product.id, selectedVariantId, variantIds])
 
   return (
-    <article className="product-card">
+    <article className={`product-card${activeQuantity > 0 ? ' product-card--selected' : ''}`}>
       <div className="product-card__media">
         <img src={displayImage} alt={product?.title} className="product-card__image" />
-        {hasOriginalPrice ? <span className="product-card__badge">Sale</span> : null}
       </div>
 
       <div className="product-card__content">
-        <div className="product-card__header">
-          <h3 className="product-card__title">{product?.title}</h3>
-          {product?.description?.trim() ? <p className="product-card__description">{product.description}</p> : null}
-        </div>
+        {hasOriginalPrice ? <span className="product-card__badge">Sale</span> : null}
 
-        <div className="product-card__pricing">
-          {hasOriginalPrice ? (
-            <span className="product-card__original-price">{formatPrice(product.originalPrice)}</span>
-          ) : null}
-          <span className="product-card__current-price">{formatPrice(product?.price)}</span>
-        </div>
+        <h3 className="product-card__title">{product?.title}</h3>
+
+        {product?.description?.trim() ? <p className="product-card__description">{product.description}</p> : null}
+
+        <a href="#" className="product-card__link">Learn More</a>
 
         {hasVariants ? (
           <div className="product-card__variants" aria-label="Product variants">
@@ -81,15 +76,18 @@ function ProductCard({ product }) {
         ) : null}
 
         <div className="product-card__footer">
-          <a href="#" className="product-card__link">
-            Learn More
-          </a>
-
           <QuantityControl
             quantity={activeQuantity}
             onDecrement={handleDecrement}
             onIncrement={handleIncrement}
           />
+
+          <div className="product-card__pricing">
+            {hasOriginalPrice ? (
+              <span className="product-card__original-price">{formatPrice(product.originalPrice)}</span>
+            ) : null}
+            <span className="product-card__current-price">{formatPrice(product?.price)}</span>
+          </div>
         </div>
       </div>
     </article>
