@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useBundleBuilder } from '../../bundle-builder/context/BundleBuilderContext'
-import { CHECKOUT, DECREMENT_QUANTITY, INCREMENT_QUANTITY, RESET_CHECKOUT, SAVE_BUNDLE } from '../../bundle-builder/context/actions'
+import { CHECKOUT, DECREMENT_QUANTITY, INCREMENT_QUANTITY, RESET_BUNDLE, RESET_CHECKOUT, SAVE_BUNDLE } from '../../bundle-builder/context/actions'
 import { calculateSubtotal, calculateDiscount, calculateTotal } from '../../../utils/price'
 import { formatPrice } from '../../../utils/price'
-import { buildReviewGroups } from '../../../utils/selections'
+import { buildReviewGroups, countSelectedInCategory } from '../../../utils/selections'
 import ReviewItem from './ReviewItem'
 
 const SHIPPING = 5.99
@@ -15,26 +15,60 @@ const CATEGORY_GROUPS = [
   { key: 'protections', title: 'Accessories' },
 ]
 
+const REQUIRED_CATEGORIES = [
+  { key: 'cameras', label: 'at least one Camera' },
+  { key: 'plans', label: 'at least one Plan' },
+  { key: 'sensors', label: 'at least one Sensor' },
+]
+
 function ReviewPanel() {
   const { state, dispatch, saved, canSave } = useBundleBuilder()
 
   const hasItems = Object.keys(state.selectedItems ?? {}).length > 0
 
+  const [validationError, setValidationError] = useState(null)
+
   const modalCloseRef = useRef(null)
+  const validationCloseRef = useRef(null)
 
   const handleCheckout = useCallback(() => {
+    if (!state.bundleData) return
+
+    const missing = REQUIRED_CATEGORIES.filter(({ key }) => {
+      const products = state.bundleData[key]
+      if (!products) return true
+      return countSelectedInCategory(state.selectedItems, products) === 0
+    })
+
+    if (missing.length > 0) {
+      setValidationError(missing.map(({ label }) => label))
+      return
+    }
+
     dispatch({ type: CHECKOUT })
-  }, [dispatch])
+  }, [dispatch, state.selectedItems, state.bundleData])
 
   const handleCloseModal = useCallback(() => {
     dispatch({ type: RESET_CHECKOUT })
   }, [dispatch])
 
+  const handleCloseValidation = useCallback(() => {
+    setValidationError(null)
+  }, [])
+
+  const handleResetBundle = useCallback(() => {
+    setValidationError(null)
+    dispatch({ type: RESET_BUNDLE })
+  }, [dispatch])
+
   const handleBackdropClick = useCallback((e) => {
-    if (e.target === e.currentTarget) {
+    if (e.target !== e.currentTarget) return
+    if (validationError) {
+      handleCloseValidation()
+    } else {
       handleCloseModal()
     }
-  }, [handleCloseModal])
+  }, [handleCloseModal, handleCloseValidation, validationError])
 
   const handleSaveBundle = useCallback(() => {
     dispatch({ type: SAVE_BUNDLE })
@@ -61,17 +95,27 @@ function ReviewPanel() {
   }, [state.checkoutStatus])
 
   useEffect(() => {
-    if (state.checkoutStatus !== 'confirmed') return
+    if (validationError && validationCloseRef.current) {
+      validationCloseRef.current.focus()
+    }
+  }, [validationError])
+
+  useEffect(() => {
+    if (state.checkoutStatus !== 'confirmed' && !validationError) return
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        handleCloseModal()
+        if (validationError) {
+          setValidationError(null)
+        } else {
+          handleCloseModal()
+        }
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [state.checkoutStatus, handleCloseModal])
+  }, [state.checkoutStatus, handleCloseModal, validationError])
 
   const reviewGroups = useMemo(
     () => buildReviewGroups(state.selectedItems, state.bundleData, CATEGORY_GROUPS),
@@ -216,7 +260,7 @@ function ReviewPanel() {
         >
           <div className="modal">
             <div className="modal__header">
-              <h2 id="checkout-modal-title">Bundle Complete!</h2>
+              <h2 id="checkout-modal-title">Bundle confirmed!</h2>
               <button
                 type="button"
                 className="modal__close"
@@ -228,11 +272,50 @@ function ReviewPanel() {
               </button>
             </div>
             <div className="modal__body">
-              <p>Your bundle has been successfully configured.</p>
+              <p>Thank you for building your security system.</p>
+              <p>Your configuration has been successfully submitted.</p>
             </div>
             <div className="modal__footer">
-              <button type="button" className="modal__button" onClick={handleCloseModal}>
-                Continue
+              <button type="button" className="modal__button" onClick={handleResetBundle}>
+                Start New Bundle
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {validationError && (
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="validation-modal-title"
+          onClick={handleBackdropClick}
+        >
+          <div className="modal modal--validation">
+            <div className="modal__header">
+              <h2 id="validation-modal-title">Your bundle is incomplete</h2>
+              <button
+                type="button"
+                className="modal__close"
+                ref={validationCloseRef}
+                onClick={handleCloseValidation}
+                aria-label="Close validation"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal__body">
+              <p>Before checking out, please add:</p>
+              <ul className="modal__list">
+                {validationError.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="modal__footer">
+              <button type="button" className="modal__button" onClick={handleCloseValidation}>
+                Got it
               </button>
             </div>
           </div>

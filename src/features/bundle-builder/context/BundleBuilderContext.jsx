@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import bundleData from '../../../data/bundle.json'
-import { loadBundle, saveBundle as persistBundle } from '../../../utils/storage'
+import { loadBundle, saveBundle as persistBundle, clearBundle } from '../../../utils/storage'
 import bundleReducer from './bundleReducer'
 import initialState from './initialState'
-import { LOAD_BUNDLE, RESTORE_BUNDLE, SAVE_BUNDLE } from './actions'
+import { LOAD_BUNDLE, RESET_BUNDLE, RESTORE_BUNDLE, SAVE_BUNDLE } from './actions'
 
 const BundleBuilderContext = createContext(null)
 
@@ -40,6 +40,16 @@ export function BundleBuilderProvider({ children }) {
       rawDispatch(action)
       return
     }
+
+    if (action.type === RESET_BUNDLE) {
+      clearBundle()
+      lastSavedHashRef.current = ''
+      setLastSavedHash('')
+      setSaved(false)
+      rawDispatch(action)
+      return
+    }
+
     rawDispatch(action)
   }, [rawDispatch])
 

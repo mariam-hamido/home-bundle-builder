@@ -194,6 +194,8 @@ function bundleReducer(state = initialState, action) {
       return {
         ...state,
         selectedItems: {},
+        currentStep: 0,
+        checkoutStatus: null,
       }
 
     default:

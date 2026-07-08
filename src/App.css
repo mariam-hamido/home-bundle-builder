@@ -991,6 +991,21 @@
   outline-offset: 2px;
 }
 
+.modal__list {
+  margin: var(--space-3) 0 0;
+  padding: 0 0 0 var(--space-5);
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.modal__list li {
+  color: var(--color-text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 /* Tablet: 768px – 1023px */
 @media (max-width: 1023px) {
   .app-shell {
