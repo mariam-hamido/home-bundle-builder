@@ -108,95 +108,100 @@ function ReviewPanel() {
         </div>
       ) : (
         <>
-          <div className="review-panel__groups">
-            {reviewGroups.map((group) => (
-              <section key={group.key} className="review-panel__group">
-                <h3 className="review-panel__group-title">{group.title}</h3>
+          <div className="review-panel__scrollable">
+            <div className="review-panel__groups">
+              {reviewGroups.map((group) => (
+                <section key={group.key} className="review-panel__group">
+                  <h3 className="review-panel__group-title">{group.title}</h3>
 
-                <div className="review-panel__items">
-                  {group.items.map((item) => (
-                    <ReviewItem
-                      key={item.id}
-                      item={item}
-                      required={group.key === 'plans'}
-                      onIncrement={() => handleIncrementQuantity(item.productId, item.variantId, item.variantIds)}
-                      onDecrement={() => handleDecrementQuantity(item.productId, item.variantId, item.variantIds)}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-
-          <div className="review-panel__summary">
-            <div className="review-panel__summary-container">
-              <div className="review-panel__badge">
-                <div className="review-panel__badge-circle">
-                  <span className="review-panel__badge-number">100%</span>
-                  <span className="review-panel__badge-label">Satisfaction</span>
-                  <span className="review-panel__badge-label">Guarantee</span>
-                </div>
-              </div>
-
-              <div className="review-panel__summary-rows">
-                <div className="review-panel__summary-row">
-                  <span className="review-panel__label">Subtotal</span>
-                  <span className="review-panel__pricing">
-                    {orderSummary.hasDiscount && (
-                      <span className="review-panel__value--original">{formatPrice(orderSummary.originalTotal)}</span>
-                    )}
-                    <span className="review-panel__value">{formatPrice(orderSummary.subtotal)}</span>
-                  </span>
-                </div>
-                <div className="review-panel__summary-row">
-                  <div className="review-panel__label-group">
-                    <span className="review-panel__label">Standard Shipping</span>
-                    <span className="review-panel__label-note">5–7 business days</span>
+                  <div className="review-panel__items">
+                    {group.items.map((item) => (
+                      <ReviewItem
+                        key={item.id}
+                        item={item}
+                        required={group.key === 'plans'}
+                        onIncrement={() => handleIncrementQuantity(item.productId, item.variantId, item.variantIds)}
+                        onDecrement={() => handleDecrementQuantity(item.productId, item.variantId, item.variantIds)}
+                      />
+                    ))}
                   </div>
-                  <span className="review-panel__value">{formatPrice(SHIPPING)}</span>
-                </div>
-                {orderSummary.hasDiscount && (
-                  <div className="review-panel__summary-row review-panel__summary-row--savings">
-                    <span className="review-panel__label">You save {orderSummary.savingsPercent}%</span>
-                    <span className="review-panel__value">−{formatPrice(orderSummary.discount)}</span>
-                  </div>
-                )}
-                <div className="review-panel__summary-row review-panel__summary-row--total">
-                  <span className="review-panel__label">Total</span>
-                  <span className="review-panel__value">{formatPrice(orderSummary.total)}</span>
-                </div>
+                </section>
+              ))}
+            </div>
+
+            <div className="review-panel__summary-row review-panel__summary-row--shipping">
+              <div className="review-panel__label-group">
+                <span className="review-panel__label">Standard Shipping</span>
+                <span className="review-panel__label-note">5–7 business days</span>
               </div>
+              <span className="review-panel__value">{formatPrice(SHIPPING)}</span>
             </div>
           </div>
 
-          <div className="review-panel__guarantee">
-            <span className="review-panel__guarantee-icon" aria-hidden="true">✓</span>
-            <div className="review-panel__guarantee-text">
-              <strong>30-Day Money-Back Guarantee</strong>
-              <span>Shop with confidence</span>
-            </div>
-          </div>
+          <div className="review-panel__footer">
+            <div className="review-panel__summary">
+              <div className="review-panel__summary-container">
+                <div className="review-panel__badge">
+                  <div className="review-panel__badge-circle">
+                    <span className="review-panel__badge-number">100%</span>
+                    <span className="review-panel__badge-label">Satisfaction</span>
+                    <span className="review-panel__badge-label">Guarantee</span>
+                  </div>
+                </div>
 
-          <div className="review-panel__actions">
-            <button
-              type="button"
-              className="review-panel__checkout-button"
-              disabled={!hasItems}
-              aria-disabled={!hasItems}
-              onClick={handleCheckout}
-            >
-              Checkout — {formatPrice(orderSummary.total)}
-            </button>
-            <button
-              type="button"
-              className="review-panel__save-button"
-              disabled={!canSave}
-              aria-disabled={!canSave}
-              onClick={handleSaveBundle}
-            >
-              Save my system for later
-            </button>
-            {saved && <p className="review-panel__toast">Bundle saved!</p>}
+                <div className="review-panel__summary-rows">
+                  <div className="review-panel__summary-row">
+                    <span className="review-panel__label">Subtotal</span>
+                    <span className="review-panel__pricing">
+                      {orderSummary.hasDiscount && (
+                        <span className="review-panel__value--original">{formatPrice(orderSummary.originalTotal)}</span>
+                      )}
+                      <span className="review-panel__value">{formatPrice(orderSummary.subtotal)}</span>
+                    </span>
+                  </div>
+                  {orderSummary.hasDiscount && (
+                    <div className="review-panel__summary-row review-panel__summary-row--savings">
+                      <span className="review-panel__label">You save {orderSummary.savingsPercent}%</span>
+                      <span className="review-panel__value">−{formatPrice(orderSummary.discount)}</span>
+                    </div>
+                  )}
+                  <div className="review-panel__summary-row review-panel__summary-row--total">
+                    <span className="review-panel__label">Total</span>
+                    <span className="review-panel__value">{formatPrice(orderSummary.total)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="review-panel__guarantee">
+              <span className="review-panel__guarantee-icon" aria-hidden="true">✓</span>
+              <div className="review-panel__guarantee-text">
+                <strong>30-Day Money-Back Guarantee</strong>
+                <span>Shop with confidence</span>
+              </div>
+            </div>
+
+            <div className="review-panel__actions">
+              <button
+                type="button"
+                className="review-panel__checkout-button"
+                disabled={!hasItems}
+                aria-disabled={!hasItems}
+                onClick={handleCheckout}
+              >
+                Checkout — {formatPrice(orderSummary.total)}
+              </button>
+              <button
+                type="button"
+                className="review-panel__save-button"
+                disabled={!canSave}
+                aria-disabled={!canSave}
+                onClick={handleSaveBundle}
+              >
+                Save my system for later
+              </button>
+              {saved && <p className="review-panel__toast">Bundle saved!</p>}
+            </div>
           </div>
         </>
       )}

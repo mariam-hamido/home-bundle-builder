@@ -50,15 +50,6 @@ function buildVariantEntry(existingEntry = {}, variantIds = [], selectedVariantI
   }
 }
 
-function hasActiveQuantity(entry = {}) {
-  if (entry.quantity != null) {
-    return entry.quantity > 0
-  }
-
-  const quantities = entry.quantities ?? {}
-  return Object.values(quantities).some((quantity) => quantity > 0)
-}
-
 function bundleReducer(state = initialState, action) {
   switch (action.type) {
     case LOAD_BUNDLE:
@@ -97,7 +88,7 @@ function bundleReducer(state = initialState, action) {
 
         return {
           ...state,
-          selectedItems: buildNextSelectedItems(state.selectedItems, productId, hasActiveQuantity(nextEntry) ? nextEntry : null),
+          selectedItems: buildNextSelectedItems(state.selectedItems, productId, nextEntry),
         }
       }
 

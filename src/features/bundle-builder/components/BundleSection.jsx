@@ -40,10 +40,12 @@ function BundleSection({
             ))}
           </div>
 
-          <button type="button" className="bundle-section__next" onClick={onNext}>
-            <span>{nextTitle}</span>
-            <ChevronRight size={16} />
-          </button>
+          {onNext ? (
+            <button type="button" className="bundle-section__next" onClick={onNext}>
+              <span>{nextTitle}</span>
+              <ChevronRight size={16} />
+            </button>
+          ) : null}
         </div>
       ) : null}
     </section>

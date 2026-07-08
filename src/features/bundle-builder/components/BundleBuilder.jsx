@@ -36,8 +36,8 @@ function BundleBuilder() {
   const activeStep = state.currentStep ?? 0
 
   const handleToggle = useCallback((index) => {
-    dispatch({ type: SET_ACTIVE_STEP, payload: index })
-  }, [dispatch])
+    dispatch({ type: SET_ACTIVE_STEP, payload: activeStep === index ? -1 : index })
+  }, [dispatch, activeStep])
 
   const handleNext = useCallback(() => {
     dispatch({ type: NEXT_STEP })
@@ -63,7 +63,7 @@ function BundleBuilder() {
         {sections.map((section, index) => {
           const selectedCount = sectionCounts[section.key] ?? 0
           const nextSection = sections[index + 1]
-          const nextTitle = nextSection ? `Next: ${nextSection.title}` : 'Next'
+          const isLast = index === sections.length - 1
 
           return (
             <BundleSection
@@ -76,8 +76,8 @@ function BundleBuilder() {
               selectedCount={`${selectedCount} selected`}
               products={state.bundleData?.[section.key] ?? []}
               onToggle={() => handleToggle(index)}
-              onNext={handleNext}
-              nextTitle={nextTitle}
+              onNext={isLast ? undefined : handleNext}
+              nextTitle={isLast ? undefined : `Next: ${nextSection.title}`}
             />
           )
         })}
