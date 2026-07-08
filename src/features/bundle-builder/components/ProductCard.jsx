@@ -61,7 +61,13 @@ function ProductCard({ product }) {
                   onClick={() => handleVariantSelect(variant.id)}
                   aria-pressed={isActive}
                 >
-                  {variant.swatch ? (
+                  {variant.image ? (
+                    <img
+                      src={variant.image}
+                      alt={variant.name}
+                      className="product-card__variant-thumb"
+                    />
+                  ) : variant.swatch ? (
                     <span
                       className="product-card__variant-swatch"
                       style={{ backgroundColor: variant.swatch }}
