@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-react'
 import ProductCard from './ProductCard'
 
 function BundleSection({
@@ -12,6 +12,7 @@ function BundleSection({
   products,
   onToggle,
   onNext,
+  nextTitle,
 }) {
   return (
     <section className={`bundle-section ${isOpen ? 'is-open' : ''}`}>
@@ -40,7 +41,8 @@ function BundleSection({
           </div>
 
           <button type="button" className="bundle-section__next" onClick={onNext}>
-            Next
+            <span>{nextTitle}</span>
+            <ChevronRight size={16} />
           </button>
         </div>
       ) : null}

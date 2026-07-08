@@ -142,31 +142,43 @@ function ReviewPanel() {
           </div>
 
           <div className="review-panel__summary">
-            <div className="review-panel__summary-row">
-              <span className="review-panel__label">Subtotal</span>
-              <span className="review-panel__pricing">
+            <div className="review-panel__summary-container">
+              <div className="review-panel__badge">
+                <div className="review-panel__badge-circle">
+                  <span className="review-panel__badge-number">100%</span>
+                  <span className="review-panel__badge-label">Satisfaction</span>
+                  <span className="review-panel__badge-label">Guarantee</span>
+                </div>
+              </div>
+
+              <div className="review-panel__summary-rows">
+                <div className="review-panel__summary-row">
+                  <span className="review-panel__label">Subtotal</span>
+                  <span className="review-panel__pricing">
+                    {orderSummary.hasDiscount && (
+                      <span className="review-panel__value--original">{formatPrice(orderSummary.originalTotal)}</span>
+                    )}
+                    <span className="review-panel__value">{formatPrice(orderSummary.subtotal)}</span>
+                  </span>
+                </div>
+                <div className="review-panel__summary-row">
+                  <div className="review-panel__label-group">
+                    <span className="review-panel__label">Standard Shipping</span>
+                    <span className="review-panel__label-note">5–7 business days</span>
+                  </div>
+                  <span className="review-panel__value">{formatPrice(SHIPPING)}</span>
+                </div>
                 {orderSummary.hasDiscount && (
-                  <span className="review-panel__value--original">{formatPrice(orderSummary.originalTotal)}</span>
+                  <div className="review-panel__summary-row review-panel__summary-row--savings">
+                    <span className="review-panel__label">You save {orderSummary.savingsPercent}%</span>
+                    <span className="review-panel__value">−{formatPrice(orderSummary.discount)}</span>
+                  </div>
                 )}
-                <span className="review-panel__value">{formatPrice(orderSummary.subtotal)}</span>
-              </span>
-            </div>
-            <div className="review-panel__summary-row">
-              <div className="review-panel__label-group">
-                <span className="review-panel__label">Standard Shipping</span>
-                <span className="review-panel__label-note">5–7 business days</span>
+                <div className="review-panel__summary-row review-panel__summary-row--total">
+                  <span className="review-panel__label">Total</span>
+                  <span className="review-panel__value">{formatPrice(orderSummary.total)}</span>
+                </div>
               </div>
-              <span className="review-panel__value">{formatPrice(SHIPPING)}</span>
-            </div>
-            {orderSummary.hasDiscount && (
-              <div className="review-panel__summary-row review-panel__summary-row--savings">
-                <span className="review-panel__label">You save {orderSummary.savingsPercent}%</span>
-                <span className="review-panel__value">−{formatPrice(orderSummary.discount)}</span>
-              </div>
-            )}
-            <div className="review-panel__summary-row review-panel__summary-row--total">
-              <span className="review-panel__label">Total</span>
-              <span className="review-panel__value">{formatPrice(orderSummary.total)}</span>
             </div>
           </div>
 

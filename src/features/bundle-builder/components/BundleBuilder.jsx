@@ -62,6 +62,8 @@ function BundleBuilder() {
       <div className="bundle-builder__steps">
         {sections.map((section, index) => {
           const selectedCount = sectionCounts[section.key] ?? 0
+          const nextSection = sections[index + 1]
+          const nextTitle = nextSection ? `Next: ${nextSection.title}` : 'Next'
 
           return (
             <BundleSection
@@ -75,6 +77,7 @@ function BundleBuilder() {
               products={state.bundleData?.[section.key] ?? []}
               onToggle={() => handleToggle(index)}
               onNext={handleNext}
+              nextTitle={nextTitle}
             />
           )
         })}
