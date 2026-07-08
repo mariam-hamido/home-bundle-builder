@@ -83,12 +83,15 @@ function ReviewPanel() {
     const discount = calculateDiscount(state.selectedItems, state.bundleData)
     const total = calculateTotal(state.selectedItems, state.bundleData, SHIPPING)
     const hasDiscount = discount > 0
+    const originalTotal = subtotal + discount
+    const savingsPercent = hasDiscount ? Math.round((discount / originalTotal) * 100) : 0
     return {
       subtotal,
       discount,
       total,
-      originalTotal: subtotal + discount,
+      originalTotal,
       hasDiscount,
+      savingsPercent,
     }
   }, [state.selectedItems, state.bundleData])
 
@@ -149,18 +152,29 @@ function ReviewPanel() {
               </span>
             </div>
             <div className="review-panel__summary-row">
-              <span className="review-panel__label">Shipping</span>
+              <div className="review-panel__label-group">
+                <span className="review-panel__label">Standard Shipping</span>
+                <span className="review-panel__label-note">5–7 business days</span>
+              </div>
               <span className="review-panel__value">{formatPrice(SHIPPING)}</span>
             </div>
             {orderSummary.hasDiscount && (
               <div className="review-panel__summary-row review-panel__summary-row--savings">
-                <span className="review-panel__label">You save</span>
-                <span className="review-panel__value">-{formatPrice(orderSummary.discount)}</span>
+                <span className="review-panel__label">You save {orderSummary.savingsPercent}%</span>
+                <span className="review-panel__value">−{formatPrice(orderSummary.discount)}</span>
               </div>
             )}
             <div className="review-panel__summary-row review-panel__summary-row--total">
               <span className="review-panel__label">Total</span>
               <span className="review-panel__value">{formatPrice(orderSummary.total)}</span>
+            </div>
+          </div>
+
+          <div className="review-panel__guarantee">
+            <span className="review-panel__guarantee-icon" aria-hidden="true">✓</span>
+            <div className="review-panel__guarantee-text">
+              <strong>30-Day Money-Back Guarantee</strong>
+              <span>Shop with confidence</span>
             </div>
           </div>
 
@@ -172,7 +186,7 @@ function ReviewPanel() {
               aria-disabled={!hasItems}
               onClick={handleCheckout}
             >
-              Checkout
+              Checkout — {formatPrice(orderSummary.total)}
             </button>
             <button
               type="button"
