@@ -4,7 +4,7 @@ import { CHECKOUT, DECREMENT_QUANTITY, INCREMENT_QUANTITY, RESET_CHECKOUT, SAVE_
 import { calculateSubtotal, calculateDiscount, calculateTotal } from '../../../utils/price'
 import { formatPrice } from '../../../utils/price'
 import { buildReviewGroups } from '../../../utils/selections'
-import QuantityControl from '../../../components/QuantityControl'
+import ReviewItem from './ReviewItem'
 
 const SHIPPING = 5.99
 
@@ -115,26 +115,13 @@ function ReviewPanel() {
 
                 <div className="review-panel__items">
                   {group.items.map((item) => (
-                    <article key={item.id} className="review-panel__item">
-                      <div className="review-panel__media">
-                        <img src={item.image} alt={item.product.title} className="review-panel__image" />
-                      </div>
-
-                      <div className="review-panel__details">
-                        <div className="review-panel__title-row">
-                          <h4 className="review-panel__item-title">{item.product.title}</h4>
-                          <span className="review-panel__price">{formatPrice(item.price)}</span>
-                        </div>
-
-                        {item.variantName ? <p className="review-panel__variant">{item.variantName}</p> : null}
-
-                        <QuantityControl
-                          quantity={item.quantity}
-                          onDecrement={() => handleDecrementQuantity(item.productId, item.variantId, item.variantIds)}
-                          onIncrement={() => handleIncrementQuantity(item.productId, item.variantId, item.variantIds)}
-                        />
-                      </div>
-                    </article>
+                    <ReviewItem
+                      key={item.id}
+                      item={item}
+                      required={group.key === 'plans'}
+                      onIncrement={() => handleIncrementQuantity(item.productId, item.variantId, item.variantIds)}
+                      onDecrement={() => handleDecrementQuantity(item.productId, item.variantId, item.variantIds)}
+                    />
                   ))}
                 </div>
               </section>
