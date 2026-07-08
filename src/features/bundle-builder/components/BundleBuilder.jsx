@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useBundleBuilder } from '../context/BundleBuilderContext'
 import { NEXT_STEP, SET_ACTIVE_STEP } from '../context/actions'
+import { countSelectedInCategory } from '../../../utils/selections'
 import BundleSection from './BundleSection'
 
 function BundleBuilder() {
@@ -41,19 +42,24 @@ function BundleBuilder() {
       </div>
 
       <div className="bundle-builder__steps">
-        {sections.map((section, index) => (
-          <BundleSection
-            key={section.key}
-            stepNumber={section.stepNumber}
-            totalSteps={section.totalSteps}
-            title={section.title}
-            isOpen={activeStep === index}
-            selectedCount="0 selected"
-            products={state.bundleData?.[section.key] ?? []}
-            onToggle={() => handleToggle(index)}
-            onNext={handleNext}
-          />
-        ))}
+        {sections.map((section, index) => {
+          const products = state.bundleData?.[section.key] ?? []
+          const selectedCount = countSelectedInCategory(state.selectedItems, products)
+
+          return (
+            <BundleSection
+              key={section.key}
+              stepNumber={section.stepNumber}
+              totalSteps={section.totalSteps}
+              title={section.title}
+              isOpen={activeStep === index}
+              selectedCount={`${selectedCount} selected`}
+              products={products}
+              onToggle={() => handleToggle(index)}
+              onNext={handleNext}
+            />
+          )
+        })}
       </div>
     </section>
   )
