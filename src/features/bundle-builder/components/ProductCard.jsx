@@ -1,16 +1,23 @@
 import { useBundleBuilder } from '../context/BundleBuilderContext'
-import { SELECT_VARIANT } from '../context/actions'
+import { DECREMENT_QUANTITY, INCREMENT_QUANTITY, SELECT_VARIANT } from '../context/actions'
 
 function ProductCard({ product }) {
   const { state, dispatch } = useBundleBuilder()
   const hasOriginalPrice = typeof product?.originalPrice === 'number'
   const hasDescription = Boolean(product?.description?.trim())
   const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0
-  const selectedVariantId = state.selectedVariants?.[product?.id]
+  const selectionEntry = state.selectedItems?.[product?.id]
+  const selectedVariantId = hasVariants
+    ? selectionEntry?.selectedVariant ?? product.variants[0]?.id
+    : null
   const selectedVariant = hasVariants
     ? product.variants.find((variant) => variant.id === selectedVariantId)
     : null
   const displayImage = selectedVariant?.image || product?.image
+  const activeQuantity = hasVariants
+    ? selectionEntry?.quantities?.[selectedVariantId] ?? 0
+    : selectionEntry?.quantity ?? 0
+  const variantIds = hasVariants ? product.variants.map((variant) => variant.id) : []
 
   const formatPrice = (value) =>
     new Intl.NumberFormat('en-US', {
@@ -19,7 +26,15 @@ function ProductCard({ product }) {
     }).format(value)
 
   const handleVariantSelect = (variantId) => {
-    dispatch({ type: SELECT_VARIANT, payload: { productId: product.id, variantId } })
+    dispatch({ type: SELECT_VARIANT, payload: { productId: product.id, variantId, variantIds } })
+  }
+
+  const handleIncrementQuantity = () => {
+    dispatch({ type: INCREMENT_QUANTITY, payload: { productId: product.id, variantId: selectedVariantId, variantIds } })
+  }
+
+  const handleDecrementQuantity = () => {
+    dispatch({ type: DECREMENT_QUANTITY, payload: { productId: product.id, variantId: selectedVariantId, variantIds } })
   }
 
   return (
@@ -75,11 +90,22 @@ function ProductCard({ product }) {
           </a>
 
           <div className="product-card__quantity" aria-label="Quantity selector">
-            <button type="button" className="product-card__quantity-button" disabled aria-label="Decrease quantity">
+            <button
+              type="button"
+              className="product-card__quantity-button"
+              onClick={handleDecrementQuantity}
+              disabled={activeQuantity <= 0}
+              aria-label="Decrease quantity"
+            >
               −
             </button>
-            <span className="product-card__quantity-value">0</span>
-            <button type="button" className="product-card__quantity-button" disabled aria-label="Increase quantity">
+            <span className="product-card__quantity-value">{activeQuantity}</span>
+            <button
+              type="button"
+              className="product-card__quantity-button"
+              onClick={handleIncrementQuantity}
+              aria-label="Increase quantity"
+            >
               +
             </button>
           </div>
