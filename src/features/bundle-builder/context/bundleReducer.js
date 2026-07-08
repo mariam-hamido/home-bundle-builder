@@ -1,10 +1,14 @@
+import { LOAD_BUNDLE } from './actions'
 import initialState from './initialState'
 
 function bundleReducer(state = initialState, action) {
   switch (action.type) {
-    case 'LOAD_BUNDLE':
-      // TODO: implement loading the bundle data.
-      return state
+    case LOAD_BUNDLE:
+      return {
+        ...state,
+        bundleData: action.payload,
+        isLoaded: true,
+      }
 
     case 'NEXT_STEP':
       // TODO: implement advancing to the next step.
