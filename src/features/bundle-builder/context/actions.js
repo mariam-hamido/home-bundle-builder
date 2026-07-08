@@ -1,4 +1,5 @@
 export const LOAD_BUNDLE = 'LOAD_BUNDLE'
+export const SET_ACTIVE_STEP = 'SET_ACTIVE_STEP'
 export const NEXT_STEP = 'NEXT_STEP'
 export const PREVIOUS_STEP = 'PREVIOUS_STEP'
 export const SELECT_VARIANT = 'SELECT_VARIANT'

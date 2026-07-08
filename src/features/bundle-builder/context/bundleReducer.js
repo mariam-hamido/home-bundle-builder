@@ -1,4 +1,4 @@
-import { LOAD_BUNDLE } from './actions'
+import { LOAD_BUNDLE, NEXT_STEP, PREVIOUS_STEP, RESET_BUNDLE, RESTORE_BUNDLE, SELECT_VARIANT, SET_ACTIVE_STEP, UPDATE_QUANTITY } from './actions'
 import initialState from './initialState'
 
 function bundleReducer(state = initialState, action) {
@@ -10,28 +10,34 @@ function bundleReducer(state = initialState, action) {
         isLoaded: true,
       }
 
-    case 'NEXT_STEP':
-      // TODO: implement advancing to the next step.
+    case SET_ACTIVE_STEP:
+      return {
+        ...state,
+        currentStep: action.payload,
+      }
+
+    case NEXT_STEP:
+      return {
+        ...state,
+        currentStep: Math.min(state.currentStep + 1, 3),
+      }
+
+    case PREVIOUS_STEP:
+      return {
+        ...state,
+        currentStep: Math.max(state.currentStep - 1, 0),
+      }
+
+    case SELECT_VARIANT:
       return state
 
-    case 'PREVIOUS_STEP':
-      // TODO: implement moving to the previous step.
+    case UPDATE_QUANTITY:
       return state
 
-    case 'SELECT_VARIANT':
-      // TODO: implement selecting a variant.
+    case RESTORE_BUNDLE:
       return state
 
-    case 'UPDATE_QUANTITY':
-      // TODO: implement updating item quantity.
-      return state
-
-    case 'RESTORE_BUNDLE':
-      // TODO: implement restoring a previously saved bundle state.
-      return state
-
-    case 'RESET_BUNDLE':
-      // TODO: implement resetting the bundle state.
+    case RESET_BUNDLE:
       return state
 
     default:

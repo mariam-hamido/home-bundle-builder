@@ -1,6 +1,6 @@
 const initialState = {
   bundleData: null,
-  currentStep: 1,
+  currentStep: 0,
   selectedItems: {},
   reviewItems: [],
   isLoaded: false,

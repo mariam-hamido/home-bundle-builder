@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { useBundleBuilder } from '../context/BundleBuilderContext'
+import { NEXT_STEP, SET_ACTIVE_STEP } from '../context/actions'
 import BundleSection from './BundleSection'
 
 function BundleBuilder() {
-  const { state } = useBundleBuilder()
+  const { state, dispatch } = useBundleBuilder()
 
   const sections = useMemo(() => {
     if (!state.bundleData) {
@@ -22,6 +23,16 @@ function BundleBuilder() {
     }))
   }, [state.bundleData])
 
+  const activeStep = state.currentStep ?? 0
+
+  const handleToggle = (index) => {
+    dispatch({ type: SET_ACTIVE_STEP, payload: index })
+  }
+
+  const handleNext = () => {
+    dispatch({ type: NEXT_STEP })
+  }
+
   return (
     <section className="bundle-builder" aria-label="Bundle builder">
       <div className="bundle-builder__header">
@@ -30,12 +41,16 @@ function BundleBuilder() {
       </div>
 
       <div className="bundle-builder__steps">
-        {sections.map((section) => (
+        {sections.map((section, index) => (
           <BundleSection
             key={section.key}
             stepNumber={section.stepNumber}
             totalSteps={section.totalSteps}
             title={section.title}
+            isOpen={activeStep === index}
+            selectedCount="0 selected"
+            onToggle={() => handleToggle(index)}
+            onNext={handleNext}
           />
         ))}
       </div>
