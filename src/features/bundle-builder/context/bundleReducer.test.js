@@ -40,6 +40,20 @@ test('tracks quantities independently for each selected variant', () => {
   assert.equal(selectedWhiteAgain.selectedItems['wyze-cam-v4'].quantities.black, 1)
 })
 
+test('removes a variant selection once all quantities reach zero', () => {
+  const selectedWhite = bundleReducer(initialState, {
+    type: SELECT_VARIANT,
+    payload: { productId: 'wyze-cam-v4', variantId: 'white', variantIds: ['white', 'black', 'gray'] },
+  })
+
+  const decremented = bundleReducer(selectedWhite, {
+    type: DECREMENT_QUANTITY,
+    payload: { productId: 'wyze-cam-v4', variantId: 'white', variantIds: ['white', 'black', 'gray'] },
+  })
+
+  assert.equal(decremented.selectedItems['wyze-cam-v4'], undefined)
+})
+
 test('prevents quantity from going below zero and supports simple products', () => {
   const decremented = bundleReducer(initialState, {
     type: DECREMENT_QUANTITY,

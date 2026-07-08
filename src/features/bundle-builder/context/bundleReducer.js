@@ -23,6 +23,40 @@ function getSelectionEntry(state, productId) {
   return state.selectedItems?.[productId] ?? {}
 }
 
+function buildNextSelectedItems(previousSelectedItems = {}, productId, nextEntry) {
+  if (nextEntry == null) {
+    const nextItems = { ...previousSelectedItems }
+    delete nextItems[productId]
+    return nextItems
+  }
+
+  return {
+    ...previousSelectedItems,
+    [productId]: nextEntry,
+  }
+}
+
+function buildVariantEntry(existingEntry = {}, variantIds = [], selectedVariantId) {
+  const quantities = buildVariantQuantities(variantIds, existingEntry.quantities ?? {})
+
+  if (selectedVariantId) {
+    quantities[selectedVariantId] = quantities[selectedVariantId] ?? 0
+  }
+
+  return {
+    ...(variantIds.length > 0 ? { selectedVariant: selectedVariantId, quantities } : existingEntry),
+  }
+}
+
+function hasActiveQuantity(entry = {}) {
+  if (entry.quantity != null) {
+    return entry.quantity > 0
+  }
+
+  const quantities = entry.quantities ?? {}
+  return Object.values(quantities).some((quantity) => quantity > 0)
+}
+
 function bundleReducer(state = initialState, action) {
   switch (action.type) {
     case LOAD_BUNDLE:
@@ -55,21 +89,22 @@ function bundleReducer(state = initialState, action) {
       const variantIds = Array.isArray(action.payload?.variantIds) ? action.payload.variantIds : []
       const existingEntry = getSelectionEntry(state, productId, action.payload)
       const selectedVariant = action.payload?.variantId || existingEntry.selectedVariant || variantIds[0]
-      const quantities = variantIds.length > 0
-        ? buildVariantQuantities(variantIds, existingEntry.quantities ?? {})
-        : existingEntry.quantities ?? {}
+
+      if (variantIds.length > 0) {
+        const nextEntry = buildVariantEntry(existingEntry, variantIds, selectedVariant)
+
+        return {
+          ...state,
+          selectedItems: buildNextSelectedItems(state.selectedItems, productId, hasActiveQuantity(nextEntry) ? nextEntry : null),
+        }
+      }
 
       return {
         ...state,
-        selectedItems: {
-          ...state.selectedItems,
-          [productId]: {
-            ...(variantIds.length > 0 ? {} : existingEntry),
-            ...(variantIds.length > 0
-              ? { selectedVariant, quantities }
-              : { quantity: existingEntry.quantity ?? 0 }),
-          },
-        },
+        selectedItems: buildNextSelectedItems(state.selectedItems, productId, {
+          ...existingEntry,
+          quantity: existingEntry.quantity ?? 0,
+        }),
       }
     }
 
@@ -82,28 +117,23 @@ function bundleReducer(state = initialState, action) {
         const selectedVariant = action.payload?.variantId || existingEntry.selectedVariant || variantIds[0]
         const quantities = buildVariantQuantities(variantIds, existingEntry.quantities ?? {})
         quantities[selectedVariant] = (quantities[selectedVariant] ?? 0) + 1
+        const nextEntry = {
+          selectedVariant,
+          quantities,
+        }
 
         return {
           ...state,
-          selectedItems: {
-            ...state.selectedItems,
-            [productId]: {
-              selectedVariant,
-              quantities,
-            },
-          },
+          selectedItems: buildNextSelectedItems(state.selectedItems, productId, nextEntry),
         }
       }
 
       return {
         ...state,
-        selectedItems: {
-          ...state.selectedItems,
-          [productId]: {
-            ...existingEntry,
-            quantity: (existingEntry.quantity ?? 0) + 1,
-          },
-        },
+        selectedItems: buildNextSelectedItems(state.selectedItems, productId, {
+          ...existingEntry,
+          quantity: (existingEntry.quantity ?? 0) + 1,
+        }),
       }
     }
 
@@ -116,28 +146,28 @@ function bundleReducer(state = initialState, action) {
         const selectedVariant = action.payload?.variantId || existingEntry.selectedVariant || variantIds[0]
         const quantities = buildVariantQuantities(variantIds, existingEntry.quantities ?? {})
         quantities[selectedVariant] = Math.max(0, (quantities[selectedVariant] ?? 0) - 1)
+        const hasAnyQuantity = Object.values(quantities).some((quantity) => quantity > 0)
+        const nextEntry = hasAnyQuantity
+          ? {
+              selectedVariant,
+              quantities,
+            }
+          : null
 
         return {
           ...state,
-          selectedItems: {
-            ...state.selectedItems,
-            [productId]: {
-              selectedVariant,
-              quantities,
-            },
-          },
+          selectedItems: buildNextSelectedItems(state.selectedItems, productId, nextEntry),
         }
       }
 
+      const nextQuantity = Math.max(0, (existingEntry.quantity ?? 0) - 1)
+
       return {
         ...state,
-        selectedItems: {
-          ...state.selectedItems,
-          [productId]: {
-            ...existingEntry,
-            quantity: Math.max(0, (existingEntry.quantity ?? 0) - 1),
-          },
-        },
+        selectedItems: buildNextSelectedItems(state.selectedItems, productId, nextQuantity > 0 ? {
+          ...existingEntry,
+          quantity: nextQuantity,
+        } : null),
       }
     }
 
