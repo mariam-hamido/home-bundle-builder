@@ -1,7 +1,16 @@
+import { useBundleBuilder } from '../context/BundleBuilderContext'
+import { SELECT_VARIANT } from '../context/actions'
+
 function ProductCard({ product }) {
+  const { state, dispatch } = useBundleBuilder()
   const hasOriginalPrice = typeof product?.originalPrice === 'number'
   const hasDescription = Boolean(product?.description?.trim())
   const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0
+  const selectedVariantId = state.selectedVariants?.[product?.id]
+  const selectedVariant = hasVariants
+    ? product.variants.find((variant) => variant.id === selectedVariantId)
+    : null
+  const displayImage = selectedVariant?.image || product?.image
 
   const formatPrice = (value) =>
     new Intl.NumberFormat('en-US', {
@@ -9,10 +18,14 @@ function ProductCard({ product }) {
       currency: 'USD',
     }).format(value)
 
+  const handleVariantSelect = (variantId) => {
+    dispatch({ type: SELECT_VARIANT, payload: { productId: product.id, variantId } })
+  }
+
   return (
     <article className="product-card">
       <div className="product-card__media">
-        <img src={product?.image} alt={product?.title} className="product-card__image" />
+        <img src={displayImage} alt={product?.title} className="product-card__image" />
         {hasOriginalPrice ? <span className="product-card__badge">Sale</span> : null}
       </div>
 
@@ -31,18 +44,28 @@ function ProductCard({ product }) {
 
         {hasVariants ? (
           <div className="product-card__variants" aria-label="Product variants">
-            {product.variants.map((variant) => (
-              <button key={variant.id} type="button" className="product-card__variant-chip">
-                {variant.swatch ? (
-                  <span
-                    className="product-card__variant-swatch"
-                    style={{ backgroundColor: variant.swatch }}
-                    aria-hidden="true"
-                  />
-                ) : null}
-                <span>{variant.name}</span>
-              </button>
-            ))}
+            {product.variants.map((variant) => {
+              const isActive = selectedVariantId === variant.id
+
+              return (
+                <button
+                  key={variant.id}
+                  type="button"
+                  className={`product-card__variant-chip${isActive ? ' product-card__variant-chip--active' : ''}`}
+                  onClick={() => handleVariantSelect(variant.id)}
+                  aria-pressed={isActive}
+                >
+                  {variant.swatch ? (
+                    <span
+                      className="product-card__variant-swatch"
+                      style={{ backgroundColor: variant.swatch }}
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                  <span>{variant.name}</span>
+                </button>
+              )
+            })}
           </div>
         ) : null}
 

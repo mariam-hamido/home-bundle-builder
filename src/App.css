@@ -200,7 +200,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  cursor: default;
+  cursor: pointer;
+}
+
+.product-card__variant-chip--active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .product-card__variant-swatch {

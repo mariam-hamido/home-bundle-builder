@@ -29,7 +29,13 @@ function bundleReducer(state = initialState, action) {
       }
 
     case SELECT_VARIANT:
-      return state
+      return {
+        ...state,
+        selectedVariants: {
+          ...state.selectedVariants,
+          [action.payload.productId]: action.payload.variantId,
+        },
+      }
 
     case UPDATE_QUANTITY:
       return state
