@@ -49,6 +49,7 @@ function BundleBuilder() {
             title={section.title}
             isOpen={activeStep === index}
             selectedCount="0 selected"
+            products={state.bundleData?.[section.key] ?? []}
             onToggle={() => handleToggle(index)}
             onNext={handleNext}
           />

@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import ProductCard from './ProductCard'
 
 function BundleSection({
   stepNumber,
@@ -7,6 +8,7 @@ function BundleSection({
   description,
   isOpen,
   selectedCount,
+  products,
   onToggle,
   onNext,
 }) {
@@ -27,8 +29,10 @@ function BundleSection({
 
       {isOpen ? (
         <div className="bundle-section__body">
-          <div className="bundle-section__placeholder" aria-label="Placeholder content">
-            <p>Selection area coming soon</p>
+          <div className="bundle-section__product-grid">
+            {products?.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
 
           <button type="button" className="bundle-section__next" onClick={onNext}>
