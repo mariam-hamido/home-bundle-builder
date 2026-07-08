@@ -37,11 +37,10 @@ function ProductCard({ product }) {
     <article className={`product-card${activeQuantity > 0 ? ' product-card--selected' : ''}`}>
       <div className="product-card__media">
         <img src={displayImage} alt={product?.title} className="product-card__image" />
+        {hasOriginalPrice ? <span className="product-card__badge">Sale</span> : null}
       </div>
 
       <div className="product-card__content">
-        {hasOriginalPrice ? <span className="product-card__badge">Sale</span> : null}
-
         <h3 className="product-card__title">{product?.title}</h3>
 
         {product?.description?.trim() ? <p className="product-card__description">{product.description}</p> : null}

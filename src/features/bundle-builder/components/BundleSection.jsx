@@ -4,6 +4,7 @@ import ProductCard from './ProductCard'
 function BundleSection({
   stepNumber,
   totalSteps,
+  icon: Icon,
   title,
   description,
   isOpen,
@@ -18,7 +19,10 @@ function BundleSection({
         <div className="bundle-section__trigger-content">
           <p className="bundle-section__eyebrow">STEP {stepNumber} OF {totalSteps}</p>
           <div className="bundle-section__title-row">
-            <h2>{title}</h2>
+            <div className="bundle-section__title-left">
+              {Icon ? <Icon size={20} className="bundle-section__title-icon" /> : null}
+              <h2>{title}</h2>
+            </div>
             <span className="bundle-section__selected-count">{selectedCount}</span>
           </div>
           {description ? <p className="bundle-section__description">{description}</p> : null}

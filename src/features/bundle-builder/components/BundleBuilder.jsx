@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { Camera, ShieldCheck, Radar, PackagePlus } from 'lucide-react'
 import { useBundleBuilder } from '../context/BundleBuilderContext'
 import { NEXT_STEP, SET_ACTIVE_STEP } from '../context/actions'
 import { countSelectedInCategory } from '../../../utils/selections'
@@ -11,6 +12,13 @@ const SECTION_DEFS = [
   { key: 'protections', title: 'Add protections' },
 ]
 
+const SECTION_ICONS = {
+  cameras: Camera,
+  plans: ShieldCheck,
+  sensors: Radar,
+  protections: PackagePlus,
+}
+
 function BundleBuilder() {
   const { state, dispatch } = useBundleBuilder()
 
@@ -21,6 +29,7 @@ function BundleBuilder() {
       ...section,
       stepNumber: index + 1,
       totalSteps: SECTION_DEFS.length,
+      icon: SECTION_ICONS[section.key],
     }))
   }, [state.bundleData])
 
@@ -59,6 +68,7 @@ function BundleBuilder() {
               key={section.key}
               stepNumber={section.stepNumber}
               totalSteps={section.totalSteps}
+              icon={section.icon}
               title={section.title}
               isOpen={activeStep === index}
               selectedCount={`${selectedCount} selected`}
